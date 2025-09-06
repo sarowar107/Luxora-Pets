@@ -1,0 +1,183 @@
+{% if settings.announcement_enabled %}
+<div class="announcement-bar" style="background-color: {{ settings.announcement_bg_color }}; color: {{ settings.announcement_text_color }};">
+  <div class="container">
+    <div class="announcement-content">
+      {% if settings.announcement_text != blank %}
+        <div class="announcement-text">
+          {{ settings.announcement_text }}
+        </div>
+      {% endif %}
+      
+      {% if settings.countdown_enabled %}
+        <div class="countdown-timer" data-end-date="{{ settings.countdown_date }}">
+          <div class="countdown-item">
+            <span class="countdown-number" id="days">00</span>
+            <span class="countdown-label">Days</span>
+          </div>
+          <div class="countdown-separator">:</div>
+          <div class="countdown-item">
+            <span class="countdown-number" id="hours">00</span>
+            <span class="countdown-label">Hours</span>
+          </div>
+          <div class="countdown-separator">:</div>
+          <div class="countdown-item">
+            <span class="countdown-number" id="minutes">00</span>
+            <span class="countdown-label">Minutes</span>
+          </div>
+          <div class="countdown-separator">:</div>
+          <div class="countdown-item">
+            <span class="countdown-number" id="seconds">00</span>
+            <span class="countdown-label">Seconds</span>
+          </div>
+        </div>
+      {% endif %}
+      
+      {% if settings.announcement_link != blank %}
+        <div class="announcement-link">
+          <a href="{{ settings.announcement_link }}" style="color: {{ settings.announcement_text_color }};">
+            {{ settings.announcement_link_text | default: 'Learn More' }}
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+.announcement-bar {
+  padding: 10px 0;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  position: relative;
+  z-index: 1000;
+}
+
+.announcement-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.announcement-text {
+  flex: 1;
+  min-width: 200px;
+}
+
+.countdown-timer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: monospace;
+  font-weight: bold;
+}
+
+.countdown-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 50px;
+}
+
+.countdown-number {
+  font-size: 18px;
+  line-height: 1;
+  display: block;
+}
+
+.countdown-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.countdown-separator {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.announcement-link a {
+  text-decoration: underline;
+  font-weight: 600;
+  transition: opacity 0.3s ease;
+}
+
+.announcement-link a:hover {
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .announcement-content {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .announcement-text {
+    min-width: auto;
+  }
+  
+  .countdown-timer {
+    gap: 5px;
+  }
+  
+  .countdown-item {
+    min-width: 40px;
+  }
+  
+  .countdown-number {
+    font-size: 16px;
+  }
+  
+  .countdown-label {
+    font-size: 9px;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const countdownTimer = document.querySelector('.countdown-timer');
+  
+  if (countdownTimer) {
+    const endDate = countdownTimer.getAttribute('data-end-date');
+    const targetDate = new Date(endDate).getTime();
+    
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const distance = targetDate - now;
+      
+      if (distance < 0) {
+        // Countdown finished
+        countdownTimer.innerHTML = '<div class="countdown-finished">Sale Ended!</div>';
+        return;
+      }
+      
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      
+      const daysElement = document.getElementById('days');
+      const hoursElement = document.getElementById('hours');
+      const minutesElement = document.getElementById('minutes');
+      const secondsElement = document.getElementById('seconds');
+      
+      if (daysElement) daysElement.textContent = days.toString().padStart(2, '0');
+      if (hoursElement) hoursElement.textContent = hours.toString().padStart(2, '0');
+      if (minutesElement) minutesElement.textContent = minutes.toString().padStart(2, '0');
+      if (secondsElement) secondsElement.textContent = seconds.toString().padStart(2, '0');
+    }
+    
+    // Update countdown immediately
+    updateCountdown();
+    
+    // Update countdown every second
+    setInterval(updateCountdown, 1000);
+  }
+});
+</script>
+{% endif %}
+
